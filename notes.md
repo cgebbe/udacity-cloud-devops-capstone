@@ -13,7 +13,9 @@
     - [python frameworks](https://blog.bitsrc.io/using-python-for-frontend-f90a0f8d51ae)
       - skulpt (3k stars)
       - ...
-      - nothing really
+      - nothing really?
+      - as always, [streamlit](https://streamlit.io/) combined with `requests` library would work, see [example](https://betterprogramming.pub/how-to-make-http-requests-in-streamlit-app-f22a77fd1ed7)
+      - [streamlit alternatives](https://stackshare.io/streamlit/alternatives) like dash,
     - [JS frameworks](https://www.ideamotive.co/blog/best-frontend-frameworks)
       - reactjs
       - angular
@@ -39,3 +41,5 @@
     - via [pure JS](https://blog.teclado.com/how-to-interact-with-rest-apis-from-javascript/) (not yet sure how)
 - single page sites
   - e.g. [react](https://reactjs.org/docs/forms.html)
+
+--> Okay, now works with pure JS, but next time streamlit seems like the easier option!
