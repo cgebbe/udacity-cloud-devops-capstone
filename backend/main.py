@@ -41,7 +41,9 @@ def contains_swearword(item: Item):
         if match:
             found_words.append(match.group())
 
-    return {
+    response = {
         "contains_swearword": True if found_words else False,
         "found_swearwords": found_words,
     }
+    logger.info(f"{response=}")
+    return response
