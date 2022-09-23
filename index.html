@@ -10,39 +10,19 @@
       crossorigin="anonymous"
     />
 
-    <script>
-      function run(e) {
-        // return false to prevent a form action, see https://stackoverflow.com/a/3350351/2135504
-        e.preventDefault();
-
-        // access data, see https://stackoverflow.com/a/26892365/2135504
-        var formdata = new FormData(document.querySelector("form"));
-        const data = Object.fromEntries(formdata.entries());
-        console.log(data);
-
-        //console.log("my log");
-        //text = document.getElementById("mytext").innerText;
-        document.getElementById("output").innerHTML = data["username"];
-        return false;
-      }
-
-      // from https://stackoverflow.com/a/67233236/2135504
-      //document.querySelector('form').addEventListener('submit', (e) => {
-      //  const data = Object.fromEntries(new FormData(e.target).entries());
-      //  console.log(data)
-      //});
-    </script>
+    <script src="index.js"></script>
   </head>
 
   <body>
-    <h1>this is something</h1>
+    <h1>Enter a sentence to check for swear words</h1>
 
     <form>
-      Name: <input id="mytext" type="text" name="username" />
+      <input id="mytext" type="text" name="username" value="You're a wanker." />
       <button onClick="run(event)">Submit</button>
     </form>
+    
+    <br>
 
-    <p>Before the script...</p>
-    <p id="output">This is some output</p>
+    <p id="output">Wainting for button press...</p>
   </body>
 </html>
