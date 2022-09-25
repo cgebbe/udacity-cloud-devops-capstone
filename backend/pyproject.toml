@@ -1,0 +1,23 @@
+[project]
+name = "backend"
+description = "backend for "
+version = "0.1.0"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "loguru",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy",
+    "pylint",
+    "pre-commit",
+]
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools ~=63.2.0",
+    "wheel ~=0.37.1",
+]
