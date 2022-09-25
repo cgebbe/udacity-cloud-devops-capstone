@@ -1,15 +1,14 @@
 """Super simple backend
-
+#
 Run it with
 uvicorn main:app --reload
 """
-from typing import Union
 import re
 
 from fastapi import FastAPI
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -23,6 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Define a Basemodel since otherwise data is passed via get.
 class Item(BaseModel):
     sentence: str
@@ -31,7 +31,8 @@ class Item(BaseModel):
 @app.post("/swearword")
 def contains_swearword(item: Item):
     logger.info(f"{item=}")
-    # from https://www.joe.co.uk/life/a-definitive-ranking-of-every-swear-word-from-worst-to-best-122544
+    # from https://www.joe.co.uk/life/
+    # a-definitive-ranking-of-every-swear-word-from-worst-to-best-122544
     swearwords = {"wanker", "asshole", "arse", "cunt", "fuck", "dick", "dickhead"}
     sentence = item.sentence.lower()
     found_words = []

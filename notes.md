@@ -1,7 +1,7 @@
 # TODO
 
 - lint apps using superlinter
-- dockerize backend app (should be really simple) and run test (curl inside docker)
+- dockerize backend app (should be really simple) and run test (curl inside docker?)
 - create aws infrastructure
   - amazon container registry
   - k8s via eksctl -- manually upfront?

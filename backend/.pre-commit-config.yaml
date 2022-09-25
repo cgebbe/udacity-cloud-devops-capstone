@@ -1,0 +1,50 @@
+# taken from https://github.com/pre-commit/pre-commit/blob/main/.pre-commit-config.yaml
+repos:
+  # file-type independent checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+      - id: check-vcs-permalinks
+      - id: destroyed-symlinks
+      - id: detect-aws-credentials
+      - id: detect-private-key
+      - id: end-of-file-fixer
+
+  # python: upgrade, format, lint
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.38.0
+    hooks:
+      - id: pyupgrade
+        args: [--py37-plus]
+        types: [python]
+  - repo: https://github.com/psf/black
+    rev: 22.8.0
+    hooks:
+      - id: black
+        minimum_pre_commit_version: 2.9.2
+        require_serial: true
+        types_or: [python, pyi]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        args: [--profile, black, --filter-files]
+        name: isort (python)
+        types: [python]
+  # - repo: https://github.com/PyCQA/flake8
+  #   rev: 5.0.4
+  #   hooks:
+  #     - id: flake8
+  #       types: [python]
+  #       args: [--config, setup.cfg]
+  - repo: local
+    hooks:
+      - id: mypy # pure identification
+        name: mypy # name shown in output
+        entry: mypy # command to run
+        language: system
+        types: [python] # list of files to run on
