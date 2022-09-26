@@ -1,18 +1,23 @@
+# DONE
+
+- backend
+  - lint apps using superlinter
+  - built docker image
+  - test docker image locally using curl
+  - init aws ECR
+  - deploy to ECR
+  - init aws EKS
+  - deploy to EKS
+  - smoke test <-- still todo! (how?! not 100% sure... using kube forward?)
+
 # TODO
 
-- lint apps using superlinter
-- dockerize backend app (should be really simple) and run test (curl inside docker?)
-- create aws infrastructure
-  - amazon container registry
-  - k8s via eksctl -- manually upfront?
-  - s3 bucket -- manually
-- deploy backend to k8s using kubectl -- get URL!
-- deploy frontend to s3 using new backend URL
-- smoketests (curl)
-- simply do manually(?)
-  - use new fronend by updating aws cloudfront (content delivery network)
-  - delete old s3 prefix
-  - delete old k8s pod?!
+- frontend
+  - init s3 bucket
+  - deploy to s3 bucket
+  - smoke test (simple curl or wget)
+  - init cloudfront
+  - smoke test2
 
 # Idea
 

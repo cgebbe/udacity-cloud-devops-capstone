@@ -21,6 +21,15 @@ DOCKER_NAME="udacity-cloud-devops-capstone"
 docker build -t $DOCKER_NAME .
 
 docker run --rm -d -p 8000:8000 $DOCKER_NAME
+
+# test backend
+curl --fail -X 'POST' \
+  'http://localhost:8000/swearword' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "sentence": "you wanker!"
+}'
 ```
 
 ## lint using superlinter
