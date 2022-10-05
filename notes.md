@@ -1,19 +1,28 @@
 # DONE
 
 - backend
+
   - lint apps using superlinter
   - built docker image
   - test docker image locally using curl
   - init aws ECR
-  - deploy to ECR
+  - push image to ECR
   - init aws EKS
-  - deploy to EKS
-  - smoke test <-- still todo! (how?! not 100% sure... using kube forward?)
+  - deploy container to EKS
+  - test via forwarding local port
+  - create service
+  - smoke test via realistic curl
+
+- makefiles could be split as such:
+  - source code (install, lint, test, ...)
+  - docker (build, push to ECR)
+  - kubernetes (deployment, service, final test)
 
 # TODO
 
 - frontend
   - init s3 bucket
+  - modify
   - deploy to s3 bucket
   - smoke test (simple curl or wget)
   - init cloudfront
