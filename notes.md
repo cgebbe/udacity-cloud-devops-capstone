@@ -21,12 +21,31 @@
 # TODO
 
 - frontend
+
   - init s3 bucket
   - modify
   - deploy to s3 bucket
   - smoke test (simple curl or wget)
   - init cloudfront
+    - [setup cloudfront distribution](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-creating-console.html)
+    - hmm.. at the moment still access denied :/
+    - TODO: checkout with index.html at S3 root
+    - [update cloudfront origin - WARNING: more difficult than expected](https://stackoverflow.com/questions/42624579/update-cloudfront-configuration-using-awscli)
+    - -> maybe rather do cloudfront init and update via cloudformation?! No fear of deletion..
   - smoke test2
+
+- AWS cloudformation?
+  - I could theoretically init those things using clouformation
+    - s3 <-- really?
+      - No, see .../2_infrastructure_as_code/README.md
+      - > recommended to setup AWS RDS & S3 using console to avoid accidential deletion (when deleting a stack)
+      - > If you really want to use cloudformation, specify DeletionPolicy: retain in the cloudformation script
+  - backend
+    - ECR
+    - ~~EKR~~ <-- already via eksctl
+  - frontend
+    - S3
+    - cloudfront
 
 # Idea
 
