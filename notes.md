@@ -1,5 +1,19 @@
+# TODO
+
+- setup circleCI
+  - credentials for aws
+  - credentials for kubectl?!
+- deploy backend
+  - smoketest
+  - get backend URL and store as variable SOMEHOW -> probably store in file
+- deploy frontend
+  - read from file
+  - smoke test
+- release
+
 # DONE
 
+- build CI image
 - backend
 
   - lint apps using superlinter
@@ -13,17 +27,8 @@
   - create service
   - smoke test via realistic curl
 
-- makefiles could be split as such:
-  - source code (install, lint, test, ...)
-  - docker (build, push to ECR)
-  - kubernetes (deployment, service, final test)
-
-# TODO
-
 - frontend
-
   - init s3 bucket
-  - modify
   - deploy to s3 bucket
   - smoke test (simple curl or wget)
   - init cloudfront
@@ -33,6 +38,12 @@
     - [update cloudfront origin - WARNING: more difficult than expected](https://stackoverflow.com/questions/42624579/update-cloudfront-configuration-using-awscli)
     - -> maybe rather do cloudfront init and update via cloudformation?! No fear of deletion..
   - smoke test2
+- makefiles could be split as such:
+  - source code (install, lint, test, ...)
+  - docker (build, push to ECR)
+  - kubernetes (deployment, service, final test)
+
+# Notes
 
 - AWS cloudformation?
   - I could theoretically init those things using clouformation

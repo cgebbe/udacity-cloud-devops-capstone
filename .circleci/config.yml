@@ -1,0 +1,79 @@
+workflows:
+  default:
+    jobs:
+      - build-backend
+      - build-frontend:
+          requires: [build-backend]
+      - release:
+          requires: [build-frontend]
+
+jobs:
+  build-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - backend-build
+      - run:
+          name: build locally
+          command: |
+            cd backend
+            make create-venv
+            make install
+            make lint
+
+            make start-local-server
+            make curl-localhost
+            make kill-local-server
+      - save_cache:
+          key: backend-build
+          paths:
+            # TODO: is this the correct pip path?!
+            - ~/.cache/pip
+      - run:
+          name: build docker
+          command: |
+            cd backend
+            make build-docker
+
+            make start-docker-server
+            make curl-localhost
+            make kill-docker-server
+
+            make push-docker
+      - run:
+          name: deploy to kubeflow
+          command: |
+            cd backend
+            make create-kube-deployment
+            sleep 10
+
+            make forward-local-port-to-pod
+            make curl-localhost
+            make kill-port-forwarding
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: expose kubeflow deployment
+          command: |
+            make expose-deployment
+            sleep 600
+
+            make curl-service
+            make store-backend-ip-address
+
+  build-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Build front-end
+          command: |
+            cd frontend
+            npm install
+            npm run build

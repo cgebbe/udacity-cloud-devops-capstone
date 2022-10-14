@@ -4,11 +4,15 @@ fix-versions:
 	pip-compile --extra=dev -o requirements-dev.txt pyproject.toml
 	pip-compile -o requirements.txt pyproject.toml
 
+create-venv:
+	python3 -m venv venv
+	# python3 -m pip install --upgrade pip setuptools wheel
+
 install:
 	. venv/bin/activate && pip install -r requirements-dev.txt
 
-run-locally:
-	. venv/bin/activate && uvicorn main:app --host 0.0.0.0
+start-local-server:
+	. venv/bin/activate && uvicorn main:app --host 0.0.0.0 &
 
 curl-localhost:
 	curl --fail -X 'POST' \
@@ -16,6 +20,10 @@ curl-localhost:
 	 -H 'accept: application/json' \
 	 -H 'Content-Type: application/json' \
 	 -d '{"sentence": "you wanker!"}'
+
+kill-local-server:
+	pgrep uvicorn
+	pkill uvicorn
 
 lint:
 	. venv/bin/activate && pre-commit run --all-files
@@ -26,34 +34,43 @@ lint:
 # https://docs.aws.amazon.com/cli/latest/reference/ecr/create-repository.html
 # https://docs.aws.amazon.com/cli/latest/reference/ecr-public/create-repository.html
 # The udacity user cannot create a public repository.
-ECR_NAME=958160457995.dkr.ecr.us-east-1.amazonaws.com
-init-docker-registry:
-	aws ecr create-repository --repository-name capstone
 
+
+AWS_REGION=eu-central-1
 DOCKER_NAME=capstone-backend
+ECR_NAME=561130499334.dkr.ecr.eu-central-1.amazonaws.com
+init-docker-registry:
+	aws ecr create-repository --repository-name ${DOCKER_NAME} --region ${AWS_REGION}
+
 build-docker:
 	docker build -t ${DOCKER_NAME} .
 
-run-docker-locally:
-	docker run -p 8000:8000 ${DOCKER_NAME}
+start-docker-server:
+	docker run -d -p 8000:8000 ${DOCKER_NAME}
+	docker ps
 
-DOCKER_VERSION=geb-20221005-v1
-IMAGE_NAME=${ECR_NAME}/${DOCKER_NAME}:${DOCKER_VERSION}
+kill-docker-server:
+	docker ps
+	docker kill $(shell docker ps --latest --quiet)
+
+CIRCLE_WORKFLOW_ID?=geb-20221014-v1
+IMAGE_NAME=${ECR_NAME}/${DOCKER_NAME}:${CIRCLE_WORKFLOW_ID}
 push-docker:
-	aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ECR_NAME}
+	aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_NAME}
 	docker tag ${DOCKER_NAME}:latest ${IMAGE_NAME}
 	docker push ${IMAGE_NAME}
 
 # KUBE POD
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+KUBE_CLUSTER_NAME=${DOCKER_NAME}
 init-kube-cluster:
-	eksctl create cluster --name capstone --region us-east-1 --node-type t3.micro
+	eksctl create cluster --name ${KUBE_CLUSTER_NAME} --region ${AWS_REGION} --node-type t3.micro
 	kubectl get nodes
 
 destroy-kube-cluster:
-	eksctl delete cluster --name capstone
+	eksctl delete cluster --name ${KUBE_CLUSTER_NAME}
 
-DEPLOY_NAME=${DOCKER_NAME}-${DOCKER_VERSION}
+DEPLOY_NAME=${DOCKER_NAME}-${CIRCLE_WORKFLOW_ID}
 create-kube-deployment:
 	kubectl create deployment ${DEPLOY_NAME} --image=${IMAGE_NAME} --port 8000
 	kubectl get deploy,pods
@@ -66,6 +83,10 @@ forward-local-port-to-pod:
 	$(eval POD_NAME=$(shell kubectl get pods -o name | grep ${DEPLOY_NAME}))
 	echo ${POD_NAME}
 	kubectl port-forward $(POD_NAME) --address 0.0.0.0 8000:8000 &
+
+show-kube-logs:
+	$(eval POD_NAME=$(shell kubectl get pods -o name | grep ${DEPLOY_NAME}))
+	kubectl logs ${POD_NAME}
 
 kill-port-forwarding:
 	pgrep kubectl
@@ -92,6 +113,12 @@ curl-service:
 		-H 'accept: application/json' \
 		-H 'Content-Type: application/json' \
 		-d '{"sentence": "you wanker!"}'
+
+store-backend-ip-address:
+	$(eval IP_ADDRESS=$(shell kubectl get services ${DEPLOY_NAME} -o json | jq -r '.status.loadBalancer.ingress[0].hostname'))
+
+	echo ${IP_ADDRESS} > ~/backend_ip_address.txt
+	cat ~/backend_ip_address.txt
 
 # created exposure at ~22:42
 # read at 22:46 --> probably need to wait for 5-10min until curling

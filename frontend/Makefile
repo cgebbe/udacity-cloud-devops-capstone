@@ -4,28 +4,28 @@ IP_ADDRESS=a97b6476955314bd1a6db9f95905553d-1273141615.us-east-1.elb.amazonaws.c
 # LOCAL
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 DEPLOY_DIR=frontend_deploy
-FRONTEND_VERSION=geb-20221009-v1
+CIRCLE_WORKFLOW_ID?=geb-20221014-v1
 
 prepare-files:
 	rm -rf ${DEPLOY_DIR}
-	mkdir -p ${DEPLOY_DIR}/${FRONTEND_VERSION}
+	mkdir -p ${DEPLOY_DIR}/${CIRCLE_WORKFLOW_ID}
 
-	cp index.* ${DEPLOY_DIR}/${FRONTEND_VERSION}
-	cp *.css ${DEPLOY_DIR}/${FRONTEND_VERSION}
+	cp index.* ${DEPLOY_DIR}/${CIRCLE_WORKFLOW_ID}
+	cp *.css ${DEPLOY_DIR}/${CIRCLE_WORKFLOW_ID}
 	cp redirect.html ${DEPLOY_DIR}
 
 	find ${DEPLOY_DIR}
 
 	@# We need to replace localhost with the actual backend IP
-	sed -i 's/localhost/${IP_ADDRESS}/' ${DEPLOY_DIR}/${FRONTEND_VERSION}/index.js
-	cat ${DEPLOY_DIR}/${FRONTEND_VERSION}/index.js
+	sed -i 's/localhost/${IP_ADDRESS}/' ${DEPLOY_DIR}/${CIRCLE_WORKFLOW_ID}/index.js
+	cat ${DEPLOY_DIR}/${CIRCLE_WORKFLOW_ID}/index.js
 
-	@# We also replace the VERSION so we can test cloudfont 
-	sed -i 's/VERSION/${FRONTEND_VERSION}/' ${DEPLOY_DIR}/${FRONTEND_VERSION}/index.html
-	cat ${DEPLOY_DIR}/${FRONTEND_VERSION}/index.html
+	@# We also replace the VERSION so we can test cloudfont if desired
+	sed -i 's/VERSION/${CIRCLE_WORKFLOW_ID}/' ${DEPLOY_DIR}/${CIRCLE_WORKFLOW_ID}/index.html
+	cat ${DEPLOY_DIR}/${CIRCLE_WORKFLOW_ID}/index.html
 
 	@# Last, we update the redirect document
-	sed -i 's/SUBDIR/${FRONTEND_VERSION}/' ${DEPLOY_DIR}/redirect.html
+	sed -i 's/SUBDIR/${CIRCLE_WORKFLOW_ID}/' ${DEPLOY_DIR}/redirect.html
 	cat ${DEPLOY_DIR}/redirect.html
 
 
@@ -44,8 +44,8 @@ init-s3:
 
 S3_WEBSITE=http://${BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com
 copy-to-s3:
-	aws s3 sync ${DEPLOY_DIR}/${FRONTEND_VERSION} s3://${BUCKET_NAME}/${FRONTEND_VERSION}
-	curl --fail ${S3_WEBSITE}/${FRONTEND_VERSION}/index.html
+	aws s3 sync ${DEPLOY_DIR}/${CIRCLE_WORKFLOW_ID} s3://${BUCKET_NAME}/${CIRCLE_WORKFLOW_ID}
+	curl --fail ${S3_WEBSITE}/${CIRCLE_WORKFLOW_ID}/index.html
 
 # FYI: It's rather tricky to make cloudfront directly serve content from S3 subfolders, see
 # https://stackoverflow.com/a/59649703/2135504
