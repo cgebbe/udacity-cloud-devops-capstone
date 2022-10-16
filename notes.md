@@ -1,3 +1,17 @@
+# Current issue
+
+```
+. venv/bin/activate && uvicorn main:app --host 0.0.0.0 &
+curl --fail -X 'POST' \
+ 'http://localhost:8000/swearword' \
+ -H 'accept: application/json' \
+ -H 'Content-Type: application/json' \
+ -d '{"sentence": "you wanker!"}'
+curl: (7) Failed to connect to localhost port 8000: Connection refused
+make: *** [Makefile:18: curl-localhost] Error 7p
+
+```
+
 # TODO
 
 - setup circleCI
