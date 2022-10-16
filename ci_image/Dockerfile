@@ -1,26 +1,25 @@
-# jammy is 22.04 LTS
-# Alternative base image: https://hub.docker.com/r/circleci/python
-FROM ubuntu:jammy-20221003
+FROM circleci/python:3.10.1
 
-WORKDIR /opt
+# Base image already includes:
+# - pgrep, pkill, sed (ubuntu base)
+# - make, curl, unzip
+# - docker, python3, python3-pip, python3-venv
+# - git
 
-# pgrep -> already
-# pkill -> already
-# sed -> already
-# nslookup -> dnsutils
-# dig -> dnsutils
-RUN apt-get update
-RUN apt-get install -y make=4.3-4.1build1
-RUN apt-get install -y curl=7.81.0-1ubuntu1.4
-RUN apt-get install -y dnsutils=1:9.18.1-1ubuntu1.2
-RUN apt-get install -y --no-install-recommends docker=1.5-2
-RUN apt-get install -y --no-install-recommends python3=3.10.6-1~22.04
-RUN apt-get install -y --no-install-recommends python3-pip
+WORKDIR /home/circleci
+RUN whoami
+RUN pwd
+
+# prevent interactive installation from tzdata when installing git-all
+ENV DEBIAN_FRONTEND=noninteractive
+RUN sudo apt-get update
+RUN sudo apt-get -y install dnsutils
+RUN sudo apt-get -y --no-install-recommends install git-lfs
 
 # aws-cli
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
-    && ./aws/install \
+    && sudo ./aws/install \
     && rm -rf ./aws/
 
 # kubectl 1.22 (check version from cluster)
