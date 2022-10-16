@@ -1,3 +1,4 @@
+version: 2.1
 workflows:
   default:
     jobs:
@@ -10,7 +11,7 @@ workflows:
 jobs:
   build-backend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: gebbissimo/ci_image:20221016-v3
     steps:
       - checkout
       - restore_cache:
@@ -58,6 +59,7 @@ jobs:
       - run:
           name: expose kubeflow deployment
           command: |
+            cd backend
             make expose-deployment
             sleep 600
 
@@ -66,14 +68,14 @@ jobs:
 
   build-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: gebbissimo/ci_image:20221016-v1
     steps:
       - checkout
       - attach_workspace:
           at: ~/
-      - run:
-          name: Build front-end
-          command: |
-            cd frontend
-            npm install
-            npm run build
+
+  release:
+    docker:
+      - image: gebbissimo/ci_image:20221016-v1
+    steps:
+      - checkout

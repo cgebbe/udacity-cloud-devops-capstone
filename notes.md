@@ -11,6 +11,12 @@
   - smoke test
 - release
 
+  - replace s3 forwarding document?
+
+- required variables
+  - setup AWS env variables (for docker push)
+  - setup kube env variables (for push to eks)
+
 # DONE
 
 - build CI image
