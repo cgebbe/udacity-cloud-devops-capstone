@@ -25,4 +25,4 @@ push-docker:
 # REMOTE DEV SERVER
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 connect-to-remote-dev-server:
-	ssh -vvv -i ~/Downloads/keep/my-key-pair.pem ubuntu@ec2-3-121-127-49.eu-central-1.compute.amazonaws.com
+	ssh -vvv -i ~/Downloads/keep/my-key-pair.pem ubuntu@ec2-18-194-59-24.eu-central-1.compute.amazonaws.com
