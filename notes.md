@@ -2,11 +2,14 @@
 
 ```
 . venv/bin/activate && uvicorn main:app --host 0.0.0.0 &
+
+IP_ADDRESS=ab2abddc70ab84909b265c52f2f7c211-2138758338.eu-central-1.elb.amazonaws.com
 curl --fail -X 'POST' \
- 'http://localhost:8000/swearword' \
+ 'http://ab2abddc70ab84909b265c52f2f7c211-2138758338.eu-central-1.elb.amazonaws.com:8000/swearword' \
  -H 'accept: application/json' \
  -H 'Content-Type: application/json' \
  -d '{"sentence": "you wanker!"}'
+
 curl: (7) Failed to connect to localhost port 8000: Connection refused
 make: *** [Makefile:18: curl-localhost] Error 7p
 
@@ -19,7 +22,9 @@ make: *** [Makefile:18: curl-localhost] Error 7p
   - credentials for kubectl?!
 - deploy backend
   - smoketest
-  - get backend URL and store as variable SOMEHOW -> probably store in file
+  - get backend URL and store as variable SOMEHOW
+    - probably store in file
+    - pass along workflow
 - deploy frontend
   - read from file
   - smoke test

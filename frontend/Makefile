@@ -1,5 +1,5 @@
 # get this from backend CI job
-IP_ADDRESS=a97b6476955314bd1a6db9f95905553d-1273141615.us-east-1.elb.amazonaws.com
+IP_ADDRESS?=a97b6476955314bd1a6db9f95905553d-1273141615.us-east-1.elb.amazonaws.com
 
 # LOCAL
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,9 +67,9 @@ init-cloudfront:
 # necessary, otherwise cached too long
 # https://stackoverflow.com/a/60049652/2135504
 invalidate-cloudfront:
-	aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/*"
+	export AWS_PAGER="" && aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/*"
 
-curl-cloudfont:
+curl-cloudfront:
 	curl --fail ${CLOUDFRONT_NAME}
 
 

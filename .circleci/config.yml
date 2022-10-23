@@ -2,11 +2,11 @@ version: 2.1
 workflows:
   default:
     jobs:
-      - build-backend
-      - build-frontend:
-          requires: [build-backend]
-      - release:
-          requires: [build-frontend]
+      # - build-backend
+      - build-frontend
+      # requires: [build-backend]
+      # - release:
+      #     requires: [build-frontend]
 
 orbs:
   aws-eks: circleci/aws-eks@1.0.0
@@ -47,7 +47,7 @@ jobs:
             cd backend
             make build-docker
 
-            ### We cannot test this easily because circleci uses remote docker...
+            ### We cannot test this easily because circleci uses a remote docker...
             # make start-docker-server
             # sleep 3
             # make curl-localhost
@@ -72,10 +72,9 @@ jobs:
             sleep 5
             make curl-localhost
             make kill-port-forwarding
-      - attach_workspace:
-          at: ~/
       - run:
           name: expose kubeflow deployment
+          no_output_timeout: 20m
           command: |
             cd backend
             make expose-deployment
@@ -83,6 +82,10 @@ jobs:
 
             make curl-service
             make store-backend-ip-address
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - backend_ip_address.txt
 
   build-frontend:
     docker:
@@ -91,9 +94,29 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/
+      - run:
+          name: fake output from build-backend
+          command: |
+            ls ~/
+            echo "export IP_ADDRESS=ab2abddc70ab84909b265c52f2f7c211-2138758338.eu-central-1.elb.amazonaws.com" > ~/backend_ip_address.txt
+            cat ~/backend_ip_address.txt
+      - run:
+          name: deploy frontend to s3
+          command: |
+            cd frontend
+            source ~/backend_ip_address.txt && make prepare-files
+            make copy-to-s3
+            make release-new-s3-version
+      - run:
+          name: force-update cloudfront
+          command: |
+            cd frontend
+            make invalidate-cloudfront
+            sleep 60
+            make curl-cloudfront
 
-  release:
-    docker:
-      - image: gebbissimo/ci_image:20221016-v1
-    steps:
-      - checkout
+  # release:
+  #   docker:
+  #     - image: gebbissimo/ci_image:20221016-v1
+  #   steps:
+  #     - checkout

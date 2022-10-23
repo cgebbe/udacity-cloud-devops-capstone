@@ -117,7 +117,7 @@ curl-service:
 store-backend-ip-address:
 	$(eval IP_ADDRESS=$(shell kubectl get services ${DEPLOY_NAME} -o json | jq -r '.status.loadBalancer.ingress[0].hostname'))
 
-	echo ${IP_ADDRESS} > ~/backend_ip_address.txt
+	echo "export IP_ADDRESS=${IP_ADDRESS}" > ~/backend_ip_address.txt
 	cat ~/backend_ip_address.txt
 
 # created exposure at ~22:42
