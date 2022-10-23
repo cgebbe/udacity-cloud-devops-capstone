@@ -23,9 +23,10 @@ jobs:
             cd backend
             make create-venv
             make install
-            make lint
+            # make lint
 
             make start-local-server
+            sleep 5
             make curl-localhost
             make kill-local-server
       - save_cache:

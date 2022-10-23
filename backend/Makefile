@@ -12,7 +12,7 @@ install:
 	. venv/bin/activate && pip install -r requirements-dev.txt
 
 start-local-server:
-	. venv/bin/activate && uvicorn main:app --host 0.0.0.0 &
+	. venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8000 &
 
 curl-localhost:
 	curl --fail -X 'POST' \
