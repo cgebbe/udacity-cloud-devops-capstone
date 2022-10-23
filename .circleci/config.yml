@@ -8,6 +8,10 @@ workflows:
       - release:
           requires: [build-frontend]
 
+orbs:
+  aws-eks: circleci/aws-eks@1.0.0
+  kubernetes: circleci/kubernetes@0.11.1
+
 jobs:
   build-backend:
     docker:
@@ -43,20 +47,29 @@ jobs:
             cd backend
             make build-docker
 
-            make start-docker-server
-            sleep 20
-            make curl-localhost
-            make kill-docker-server
+            ### We cannot test this easily because circleci uses remote docker...
+            # make start-docker-server
+            # sleep 3
+            # make curl-localhost
+            # make kill-docker-server
 
             make push-docker
+
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: capstone-backend
+          install-kubectl: true
       - run:
           name: deploy to kubeflow
           command: |
+            kubectl version
+            kubectl config view
+
             cd backend
             make create-kube-deployment
             sleep 10
 
             make forward-local-port-to-pod
+            sleep 5
             make curl-localhost
             make kill-port-forwarding
       - attach_workspace:
