@@ -2,42 +2,39 @@ version: 2.1
 workflows:
   default:
     jobs:
-      # - build-backend
-      - build-frontend
-      # requires: [build-backend]
-      # - release:
-      #     requires: [build-frontend]
+      - deploy-backend
+      - deploy-frontend:
+          requires: [deploy-backend]
 
 orbs:
   aws-eks: circleci/aws-eks@1.0.0
   kubernetes: circleci/kubernetes@0.11.1
 
 jobs:
-  build-backend:
+  deploy-backend:
     docker:
       - image: gebbissimo/ci_image:20221016-v3
     steps:
       - checkout
-      # - restore_cache:
-      #     keys:
-      #       - backend-build
-      # - run:
-      #     name: build locally
-      #     command: |
-      #       cd backend
-      #       make create-venv
-      #       make install
-      #       make lint
+      - restore_cache:
+          keys:
+            - backend-build
+      - run:
+          name: build locally
+          command: |
+            cd backend
+            make create-venv
+            make install
+            make lint
 
-      #       make start-local-server
-      #       sleep 5
-      #       make curl-localhost
-      #       make kill-local-server
-      # - save_cache:
-      #     key: backend-build
-      #     paths:
-      #       # TODO: is this the correct pip path?!
-      #       - ~/.cache/pip
+            make start-local-server
+            sleep 5
+            make curl-localhost
+            make kill-local-server
+      - save_cache:
+          key: backend-build
+          paths:
+            - ~/.cache/pip
       - setup_remote_docker:
           version: 20.10.14
           docker_layer_caching: true
@@ -47,14 +44,13 @@ jobs:
             cd backend
             make build-docker
 
-            ### We cannot test this easily because circleci uses a remote docker...
+            ### We cannot easily test this because circleci uses a remote docker...
             # make start-docker-server
             # sleep 3
             # make curl-localhost
             # make kill-docker-server
 
             make push-docker
-
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: capstone-backend
           install-kubectl: true
@@ -66,10 +62,10 @@ jobs:
 
             cd backend
             make create-kube-deployment
-            sleep 10
+            sleep 20
 
             make forward-local-port-to-pod
-            sleep 5
+            sleep 30
             make curl-localhost
             make kill-port-forwarding
       - run:
@@ -87,7 +83,7 @@ jobs:
           paths:
             - backend_ip_address.txt
 
-  build-frontend:
+  deploy-frontend:
     docker:
       - image: gebbissimo/ci_image:20221016-v1
     steps:
@@ -95,10 +91,11 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: fake output from build-backend
+          name: check backend IP address
           command: |
             ls ~/
-            echo "export IP_ADDRESS=ab2abddc70ab84909b265c52f2f7c211-2138758338.eu-central-1.elb.amazonaws.com" > ~/backend_ip_address.txt
+            ### Fake it if necessary
+            # echo "export IP_ADDRESS=ab2abddc70ab84909b265c52f2f7c211-2138758338.eu-central-1.elb.amazonaws.com" > ~/backend_ip_address.txt
             cat ~/backend_ip_address.txt
       - run:
           name: deploy frontend to s3
@@ -114,9 +111,3 @@ jobs:
             make invalidate-cloudfront
             sleep 60
             make curl-cloudfront
-
-  # release:
-  #   docker:
-  #     - image: gebbissimo/ci_image:20221016-v1
-  #   steps:
-  #     - checkout

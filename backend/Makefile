@@ -67,6 +67,9 @@ init-kube-cluster:
 	eksctl create cluster --name ${KUBE_CLUSTER_NAME} --region ${AWS_REGION} --node-type t3.micro
 	kubectl get nodes
 
+get-kube-all:
+	kubectl get deploy,pods,rs,service
+
 destroy-kube-cluster:
 	eksctl delete cluster --name ${KUBE_CLUSTER_NAME}
 
@@ -77,6 +80,9 @@ create-kube-deployment:
 
 delete-kube-deployment:
 	kubectl delete deployment ${DEPLOY_NAME}
+
+delete-all-kube-deployments:
+	kubectl delete --all deployments
 
 # For defining variables in Makefile targets, see https://stackoverflow.com/a/1909390/2135504
 forward-local-port-to-pod:
