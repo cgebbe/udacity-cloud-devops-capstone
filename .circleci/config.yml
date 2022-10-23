@@ -14,26 +14,29 @@ jobs:
       - image: gebbissimo/ci_image:20221016-v3
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - backend-build
-      - run:
-          name: build locally
-          command: |
-            cd backend
-            make create-venv
-            make install
-            # make lint
+      # - restore_cache:
+      #     keys:
+      #       - backend-build
+      # - run:
+      #     name: build locally
+      #     command: |
+      #       cd backend
+      #       make create-venv
+      #       make install
+      #       make lint
 
-            make start-local-server
-            sleep 5
-            make curl-localhost
-            make kill-local-server
-      - save_cache:
-          key: backend-build
-          paths:
-            # TODO: is this the correct pip path?!
-            - ~/.cache/pip
+      #       make start-local-server
+      #       sleep 5
+      #       make curl-localhost
+      #       make kill-local-server
+      # - save_cache:
+      #     key: backend-build
+      #     paths:
+      #       # TODO: is this the correct pip path?!
+      #       - ~/.cache/pip
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
       - run:
           name: build docker
           command: |
@@ -41,6 +44,7 @@ jobs:
             make build-docker
 
             make start-docker-server
+            sleep 20
             make curl-localhost
             make kill-docker-server
 
