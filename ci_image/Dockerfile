@@ -29,3 +29,5 @@ RUN curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.22.6/2022-03
     && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin \
     && echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc \
     && kubectl version --short --client
+
+RUN sudo apt-get -y --no-install-recommends iputils-ping
