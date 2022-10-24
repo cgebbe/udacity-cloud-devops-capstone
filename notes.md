@@ -1,3 +1,11 @@
+# tar
+
+```bash
+tar --exclude='udacity-cloud-devops-capstone/backend/venv' -czvf submission.tar.gz udacity-cloud-devops-capstone/
+
+zip -r capstone.zip udacity-cloud-devops-capstone -x udacity-cloud-devops-capstone/backend/venv/\*
+```
+
 # Current issue
 
 ```

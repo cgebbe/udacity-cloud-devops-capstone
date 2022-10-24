@@ -6,13 +6,27 @@ This is a minimal web-app for detecting swear words (see screenshot below) with 
 
 ![](README.assets/2022-10-24-00-00-27.png)
 
-The backend uses fastapi and a uvicorn server. It is packaged as a docker container and pushed to an AWS ECR. Finally, the docker is deployed and exposed to a kubeflow cluster using AWS EKS.
+The backend uses fastapi and a uvicorn server. It is linted using [pre-commit](https://pre-commit.com/) (see [configuration file](backend/.pre-commit-config.yaml)) and then packaged as a docker container and pushed to an AWS ECR. Finally, the docker is deployed and exposed to a kubeflow cluster using AWS EKS.
 
 The frontend consists of a simple HTML and JS file. It calls the backend in the client browser via a simple `fetch` call. It is deployed to an AWS S3 bucket and can be accessed via AWS Cloudfront.
 
 The CI deploys both the backend and the frontend. If all tests pass, it is released via a Blue/Green deployment by simply replacing a forwarding `index.html` file in the S3 bucket and by subsequently invalidating the Cloudfront cache.
 
-## CI screenshot
+## Screenshots
+
+### Linting
+
+Linting is performed using [pre-commit](https://pre-commit.com/), i.e. `pre-commit run --all-files`. This applies several linters on all relevant files, see [configuration file](backend/.pre-commit-config.yaml). Below a screenshot of a failed and a successful CI job.
+
+![](screenshots/linting_error.png)
+
+![](screenshots/linting_success.png)
+
+### AWS EC2 instances from EKS cluster
+
+![](screenshots/aws_ec2_console.png)
+
+### CI pipeline
 
 Note the CircleCI workflow ID `8fb828f1-1e60-47f1-a737-f94814536148` in the screenshot which corresponds to the output of `curl --fail d35lip4c5u1vnb.cloudfront.net`:
 
